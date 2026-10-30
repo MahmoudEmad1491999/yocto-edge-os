@@ -1,0 +1,23 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  lint-and-parse:
+    # Full image builds need hours and >100 GB; they run locally via ci/check.sh.
+    # GitHub verifies the layer parses and the metadata is clean.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck pipx
+      - run: |
+          shopt -s nullglob globstar
+          f=(scripts/**/*.sh ci/*.sh); [ ${#f[@]} -eq 0 ] || shellcheck "${f[@]}"
+      - name: bitbake parse
+        if: hashFiles('meta-edge/conf/layer.conf') != ''
+        run: |
+          pipx install 'kas>=5.5'
+          kas-container shell kas/qemuarm64.yml -c "bitbake -p && bitbake-layers show-layers"
+      - name: oelint-adv
+        if: hashFiles('meta-edge/conf/layer.conf') != ''
+        run: |
+          pipx install oelint-adv
+          find meta-edge -name '*.bb' -o -name '*.bbappend' | xargs -r oelint-adv --quiet || true

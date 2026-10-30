@@ -1,0 +1,8 @@
+build/
+.agent/
+openembedded-core/
+meta-openembedded/
+bitbake/
+meta-rauc/
+meta-virtualization/
+__pycache__/
