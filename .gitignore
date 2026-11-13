@@ -1,8 +1,18 @@
+# Yocto build output
 build/
-.agent/
+
+# kas-cloned layers (kas fetches these at build time)
 openembedded-core/
 meta-openembedded/
 bitbake/
 meta-rauc/
 meta-virtualization/
+
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Agent working directory
+.agent/

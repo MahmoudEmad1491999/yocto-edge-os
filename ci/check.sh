@@ -10,6 +10,24 @@ echo "== shellcheck =="
 shopt -s nullglob globstar
 f=(scripts/**/*.sh ci/*.sh); [ ${#f[@]} -eq 0 ] || shellcheck "${f[@]}"
 
+echo "== kas YAML syntax =="
+python3 - <<'PYEOF'
+import sys, pathlib
+try:
+    import yaml
+except ImportError:
+    print("PyYAML not available — skipping kas YAML check"); sys.exit(0)
+errs = []
+for p in sorted(pathlib.Path("kas").glob("*.yml")):
+    try:
+        yaml.safe_load(p.read_text())
+    except yaml.YAMLError as e:
+        errs.append(f"{p}: {e}")
+if errs:
+    print("\n".join(errs)); sys.exit(1)
+print(f"OK ({len(list(pathlib.Path('kas').glob('*.yml')))} files)")
+PYEOF
+
 if [ ! -f meta-edge/conf/layer.conf ] || [ ! -f kas/qemuarm64.yml ]; then
   echo "layer/kas config not created yet — skipping build"; exit 0
 fi

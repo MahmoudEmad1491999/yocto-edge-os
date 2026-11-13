@@ -1,0 +1,36 @@
+header:
+  version: 14
+
+distro: edgeos
+target: edgeos-image
+
+repos:
+  bitbake:
+    url: https://git.openembedded.org/bitbake
+    refspec: "2.18"
+
+  openembedded-core:
+    url: https://git.openembedded.org/openembedded-core
+    refspec: wrynose
+    layers:
+      meta:
+
+  meta-openembedded:
+    url: https://github.com/openembedded/meta-openembedded
+    refspec: wrynose
+    layers:
+      meta-oe:
+      meta-python:
+      meta-networking:
+
+  meta-edge:
+    path: meta-edge
+    layers:
+      .:
+
+local_conf_header:
+  resource_limits: |
+    # Constrained to 16 GB RAM host — see CLAUDE.md
+    BB_NUMBER_THREADS = "6"
+    PARALLEL_MAKE = "-j 6"
+    INHERIT += "rm_work"
