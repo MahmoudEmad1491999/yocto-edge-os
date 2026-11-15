@@ -28,8 +28,42 @@ if errs:
 print(f"OK ({len(list(pathlib.Path('kas').glob('*.yml')))} files)")
 PYEOF
 
-if [ ! -f meta-edge/conf/layer.conf ] || [ ! -f kas/qemuarm64.yml ]; then
-  echo "layer/kas config not created yet — skipping build"; exit 0
+echo "== meta-edge layer.conf =="
+python3 - <<'PYEOF'
+import sys, pathlib
+p = pathlib.Path("meta-edge/conf/layer.conf")
+if not p.exists():
+    print("not present — skipping"); sys.exit(0)
+c = p.read_text()
+for field in ("BBPATH", "BBFILES", "BBFILE_COLLECTIONS", "LAYERSERIES_COMPAT"):
+    if field not in c:
+        print(f"missing required field: {field}"); sys.exit(1)
+if "wrynose" not in c:
+    print("LAYERSERIES_COMPAT does not include 'wrynose'"); sys.exit(1)
+print("OK")
+PYEOF
+
+echo "== edgeos distro conf =="
+python3 - <<'PYEOF'
+import sys, pathlib
+p = pathlib.Path("meta-edge/conf/distro/edgeos.conf")
+if not p.exists():
+    print("not present — skipping"); sys.exit(0)
+c = p.read_text()
+for field in ("DISTRO", "DISTRO_NAME", "DISTRO_VERSION", "TARGET_VENDOR",
+              "DISTRO_FEATURES", "VIRTUAL-RUNTIME_init_manager"):
+    if field not in c:
+        print(f"missing required field: {field}"); sys.exit(1)
+if "systemd" not in c:
+    print("systemd not declared in distro conf"); sys.exit(1)
+print("OK")
+PYEOF
+
+if [ ! -f meta-edge/conf/layer.conf ] || [ ! -f kas/qemuarm64.yml ] || \
+   [ ! -f meta-edge/recipes-core/images/edgeos-image.bb ]; then
+  echo "== skipping kas build (layer/image not fully configured yet) =="
+  echo "ALL CHECKS PASSED"
+  exit 0
 fi
 
 KAS_CFG="kas/qemuarm64.yml"

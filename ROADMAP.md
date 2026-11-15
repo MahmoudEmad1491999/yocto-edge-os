@@ -4,7 +4,7 @@ One task ≈ one day. The agent takes the first unchecked item. First full build
 
 ## Phase 0 — Bring-up
 - [x] `kas/base.yml` (bitbake 2.18, openembedded-core wrynose, meta-openembedded wrynose: meta-oe/meta-python/meta-networking), `kas/qemuarm64.yml`, local.conf limits from CLAUDE.md, `.gitignore`
-- [ ] `meta-edge` layer skeleton (layer.conf with LAYERSERIES_COMPAT wrynose) + `edgeos` distro conf derived from nodistro defaults
+- [x] `meta-edge` layer skeleton (layer.conf with LAYERSERIES_COMPAT wrynose) + `edgeos` distro conf derived from nodistro defaults
 - [ ] `edgeos-image.bb` (core-image based, minimal); first successful build of the image
 - [ ] `scripts/run-qemu.sh`: runqemu nographic slirp with ssh port forward; document login
 - [ ] Enable `testimage` with slirp in kas/check.yml; first runtime test `edgeos_boot.py` (os-release has EdgeOS)
