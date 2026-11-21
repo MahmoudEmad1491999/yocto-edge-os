@@ -1,7 +1,7 @@
 header:
   version: 14
+  includes:
+    - base.yml
 
-includes:
-  - base.yml
 
 machine: qemuarm64
